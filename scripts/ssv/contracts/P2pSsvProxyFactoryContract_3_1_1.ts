@@ -1,7 +1,7 @@
 import { getContract } from 'viem'
 import { publicClient, walletClient } from '../../common/helpers/clients'
 
-export const P2pSsvProxyFactoryAbi_3_1: unknown[] = [
+export const P2pSsvProxyFactoryAbi_3_1_1: unknown[] = [
   {
     anonymous: false,
     inputs: [{ indexed: true, internalType: 'address', name: '_proxy', type: 'address' }],
@@ -135,18 +135,16 @@ export const P2pSsvProxyFactoryAbi_3_1: unknown[] = [
   },
 ]
 
-if (!process.env.P2P_SSV_PROXY_FACTORY_ADDRESS_3_1) {
-  throw new Error('No P2P_SSV_PROXY_FACTORY_ADDRESS_3_1 in ENV')
-}
+export const P2pSsvProxyFactoryAddress_3_1_1 = process.env
+  .P2P_SSV_PROXY_FACTORY_ADDRESS_3_1_1 as `0x${string}` | undefined
 
-export const P2pSsvProxyFactoryAddress_3_1 = process.env
-  .P2P_SSV_PROXY_FACTORY_ADDRESS_3_1 as `0x${string}`
-
-export const P2pSsvProxyFactoryContract_3_1 = getContract({
-  address: P2pSsvProxyFactoryAddress_3_1,
-  abi: P2pSsvProxyFactoryAbi_3_1,
-  client: {
-    public: publicClient,
-    wallet: walletClient,
-  },
-})
+export const P2pSsvProxyFactoryContract_3_1_1 = P2pSsvProxyFactoryAddress_3_1_1
+  ? getContract({
+      address: P2pSsvProxyFactoryAddress_3_1_1,
+      abi: P2pSsvProxyFactoryAbi_3_1_1,
+      client: {
+        public: publicClient,
+        wallet: walletClient,
+      },
+    })
+  : undefined

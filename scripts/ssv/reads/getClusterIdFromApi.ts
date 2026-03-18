@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { logger } from '../../common/helpers/logger'
-import { isHolesky } from '../../common/helpers/clients'
+import { isHoodi } from '../../common/helpers/clients'
 import { getBeaconUrl } from '../helpers/ssvEnv'
 
 export async function getClusterIdFromApi(
@@ -13,7 +13,7 @@ export async function getClusterIdFromApi(
   getBeaconUrl()
 
   const result = await axios.get(
-    `https://api.ssv.network/api/v4/${isHolesky ? 'holesky' : 'mainnet'}/clusters/` +
+    `https://api.ssv.network/api/v4/${isHoodi ? 'hoodi' : 'mainnet'}/clusters/` +
       args,
   )
 

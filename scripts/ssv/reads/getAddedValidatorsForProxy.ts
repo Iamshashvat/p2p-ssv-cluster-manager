@@ -1,5 +1,5 @@
 import { logger } from '../../common/helpers/logger'
-import { isHolesky, publicClient } from '../../common/helpers/clients'
+import { isHoodi, publicClient } from '../../common/helpers/clients'
 import {
   SSVNetworkAbi,
   SSVNetworkAddress,
@@ -16,7 +16,7 @@ export async function getAddedValidatorsForProxy(proxy: string): Promise<{   ope
       address: SSVNetworkAddress,
       abi: SSVNetworkAbi,
       eventName: 'ValidatorAdded',
-      fromBlock: isHolesky ? 1502570n : 1000000n,
+      fromBlock: isHoodi ? 1216598n : 1000000n,
       toBlock: 'latest',
       strict: true,
       args: {

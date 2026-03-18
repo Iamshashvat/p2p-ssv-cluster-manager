@@ -8,12 +8,25 @@ export function readKeyshares(filePath = 'keyshares.json'): SharesFile['shares']
 }
 
 export function toSsvRegistrationInput(shares: SharesFile['shares']) {
-  let operatorIds: number[] = []
+  if (shares.length === 0) {
+    throw new Error('No shares provided')
+  }
+
+  const operatorIds = shares[0].payload.operatorIds
   const publicKeys: string[] = []
   const sharesData: string[] = []
 
   for (const share of shares) {
-    operatorIds = share.payload.operatorIds
+    const ids = share.payload.operatorIds
+    if (
+      ids.length !== operatorIds.length ||
+      ids.some((id, i) => id !== operatorIds[i])
+    ) {
+      throw new Error(
+        `Operator IDs mismatch for validator ${share.data.publicKey}: ` +
+        `expected [${operatorIds}], got [${ids}]`,
+      )
+    }
     publicKeys.push(share.data.publicKey)
     sharesData.push(share.payload.sharesData)
   }
