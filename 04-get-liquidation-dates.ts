@@ -2,7 +2,6 @@ import 'dotenv/config'
 import { logger } from './scripts/common/helpers/logger'
 import { getAllClusterStates } from './scripts/ssv/reads/getAllClusterStates'
 import { getDaysToLiquidation } from './scripts/ssv/reads/getDaysToLiquidation'
-import process from 'process'
 
 async function main() {
   logger.info('04-get-liquidation-dates')

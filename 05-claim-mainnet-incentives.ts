@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import { logger } from './scripts/common/helpers/logger'
-import process from 'process'
 import { claimMainnetIncentives } from './scripts/ssv/writes/claimMainnetIncentives'
 
 async function main() {

@@ -1,32 +1,22 @@
 import { logger } from '../../common/helpers/logger'
 import { P2pSsvProxyContractAbi } from '../contracts/P2pSsvProxyContractAbi'
 import { sendTx } from '../../common/helpers/sendTx'
+import { getAddress, getClusterState, getNumberList } from '../helpers/ssvEnv'
 
 export async function liquidate() {
   logger.log('liquidate started')
 
-  const operatorIds = [
-    350,
-    354,
-    357,
-    365
-  ]
+  const operatorIds = getNumberList('SSV_LIQUIDATE_OPERATOR_IDS')
+  const clusterState = getClusterState('SSV_LIQUIDATE_CLUSTER')
+  const proxyAddress = getAddress('SSV_LIQUIDATE_PROXY_ADDRESS')
 
   const txHash = await sendTx(
-    '0x29CadA9320a4D068D1F4651b9AC0AA10745317ff',
+    proxyAddress,
     P2pSsvProxyContractAbi,
     'liquidate',
     [
       operatorIds,
-      [
-        {
-          validatorCount: 0,
-          networkFeeIndex: 98920382919n,
-          index: 363708005928n,
-          active: true,
-          balance: 13022762241070000000n,
-        },
-      ],
+      [clusterState],
     ],
   )
 

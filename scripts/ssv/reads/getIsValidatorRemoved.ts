@@ -1,7 +1,7 @@
 import { logger } from '../../common/helpers/logger'
 import {
   SSVNetworkViewsAbi,
-  SSVNetworkViewsAddresss,
+  SSVNetworkViewsAddress,
 } from '../contracts/SSVNetworkViewsContract'
 import { publicClient } from '../../common/helpers/clients'
 import { sleep } from '../../common/helpers/sleep'
@@ -16,7 +16,7 @@ export async function getIsValidatorRemoved(
 
   try {
     const isActive = await publicClient.readContract({
-      address: SSVNetworkViewsAddresss,
+      address: SSVNetworkViewsAddress,
       abi: SSVNetworkViewsAbi,
       functionName: 'getValidator',
       args: [clusterOwner, pubkey],

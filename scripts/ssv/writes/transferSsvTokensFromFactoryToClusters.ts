@@ -7,25 +7,11 @@ import { waitForHashToBeApprovedAndExecute } from '../../safe/waitForHashToBeApp
 import { ClusterStateApi, toClusterState } from '../models/ClusterStateApi'
 import { getClusterStatesToTopUp } from '../reads/getClusterStatesToTopUp'
 import { SSVNetworkAbi } from '../contracts/SSVNetworkContract'
+import { getSharedSsvWriteConfig } from '../helpers/ssvEnv'
 
 export async function transferSsvTokensFromFactoryToClusters() {
   logger.info('transferSsvTokensFromFactoryToClusters started')
-
-  if (!process.env.P2P_SSV_PROXY_FACTORY_ADDRESS) {
-    throw new Error('No P2P_SSV_PROXY_FACTORY_ADDRESS in ENV')
-  }
-  if (!process.env.SAFE_ADDRESS) {
-    throw new Error('No SAFE_ADDRESS in ENV')
-  }
-  if (!process.env.SAFE_OWNER_ADDRESS_2) {
-    throw new Error('No SAFE_OWNER_ADDRESS_2 in ENV')
-  }
-  if (!process.env.SSV_NETWORK_ADDRESS) {
-    throw new Error('No SSV_NETWORK_ADDRESS in ENV')
-  }
-  if (!process.env.SSV_TOKEN_ADDRESS) {
-    throw new Error('No SSV_TOKEN_ADDRESS in ENV')
-  }
+  const config = getSharedSsvWriteConfig()
 
   const { clusterStatesToTopUp, totalTokensToTopUp } =
     await getClusterStatesToTopUp()
@@ -37,7 +23,7 @@ export async function transferSsvTokensFromFactoryToClusters() {
     logger.info('transferSsvTokensFromFactoryToClusters finished')
     return
   }
-  const metaTxs = getMetaTxs(totalTokensToTopUp, clusterStatesToTopUp)
+  const metaTxs = getMetaTxs(totalTokensToTopUp, clusterStatesToTopUp, config)
 
   await waitForHashToBeApprovedAndExecute(metaTxs)
 
@@ -49,16 +35,17 @@ type ClusterStateToTopUp = ClusterStateApi & { tokensToAdd: bigint }
 function getMetaTxs(
   totalTokensToTopUp: bigint,
   clusterStatesToTopUp: ClusterStateToTopUp[],
+  config: ReturnType<typeof getSharedSsvWriteConfig>,
 ) {
   const metaTxs: MetaTransaction[] = []
 
   const approveData = encodeFunctionData({
     abi: SSVTokenAbi,
     functionName: 'approve',
-    args: [process.env.SSV_NETWORK_ADDRESS, totalTokensToTopUp],
+    args: [config.ssvNetworkAddress, totalTokensToTopUp],
   })
   const approveMetaTx = {
-    to: process.env.SSV_TOKEN_ADDRESS as `0x${string}`,
+    to: config.ssvTokenAddress,
     data: approveData,
   }
   metaTxs.push(approveMetaTx)
@@ -67,13 +54,13 @@ function getMetaTxs(
     abi: P2pSsvProxyFactoryAbi,
     functionName: 'transferERC20',
     args: [
-      process.env.SSV_TOKEN_ADDRESS,
-      process.env.SAFE_ADDRESS,
+      config.ssvTokenAddress,
+      config.safeAddress,
       totalTokensToTopUp,
     ],
   })
   const transferSsvTokensToGsTx = {
-    to: process.env.P2P_SSV_PROXY_FACTORY_ADDRESS as `0x${string}`,
+    to: config.factoryAddress,
     data: transferSsvTokensToGsData,
   }
   metaTxs.push(transferSsvTokensToGsTx)
@@ -92,7 +79,7 @@ function getMetaTxs(
       ],
     })
     const depositMetaTx = {
-      to: process.env.SSV_NETWORK_ADDRESS as `0x${string}`,
+      to: config.ssvNetworkAddress,
       data: depositData,
     }
     metaTxs.push(depositMetaTx)

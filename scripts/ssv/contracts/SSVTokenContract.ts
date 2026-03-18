@@ -212,10 +212,10 @@ if (!process.env.SSV_TOKEN_ADDRESS) {
   throw new Error('No SSV_TOKEN_ADDRESS in ENV')
 }
 
-export const SSVTokenAddresss = process.env.SSV_TOKEN_ADDRESS as `0x${string}`
+export const SSVTokenAddress = process.env.SSV_TOKEN_ADDRESS as `0x${string}`
 
 export const SSVTokenContract = getContract({
-  address: SSVTokenAddresss,
+  address: SSVTokenAddress,
   abi: SSVTokenAbi,
   client: {
     public: publicClient,

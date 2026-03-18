@@ -3,11 +3,11 @@ import { encodeFunctionData } from 'viem'
 import { ClusterState } from '../models/ClusterState'
 import { waitForHashToBeApprovedAndExecute } from '../../safe/waitForHashToBeApprovedAndExecute'
 import { MetaTransaction } from '../../safe/models/MetaTransaction'
-import { P2pSsvProxyFactoryAddresss } from '../contracts/P2pSsvProxyFactoryContract'
 import { P2pSsvProxyFactoryAbi_3_1, P2pSsvProxyFactoryAddress_3_1 } from '../contracts/P2pSsvProxyFactoryContract_3_1'
 import { FeeRecipient } from '../models/SharesFileTypes'
 import { SSVNetworkAbi } from '../contracts/SSVNetworkContract'
 import { predictP2pSsvProxyAddress_3_1 } from '../reads/predictP2pSsvProxyAddress_3_1'
+import { getAddress } from '../helpers/ssvEnv'
 
 export async function bulkRegisterValidators(
   _operatorOwners: string[],
@@ -46,7 +46,7 @@ export async function bulkRegisterValidators(
   const setFeeRecipientAddressCalldata = encodeFunctionData({
     abi: SSVNetworkAbi,
     functionName: 'setFeeRecipientAddress',
-    args: ['0x4205F876f0F6783a011bD11076583FE57C88AF33'],
+    args: [getAddress('SSV_FEE_RECIPIENT_ADDRESS')],
   })
   const setFeeRecipientAddressMetaTx = {
     to: proxy as `0x${string}`,

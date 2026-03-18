@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { getMerkleTreePath } from '../helpers/ssvEnv'
 
 type MerkleEntry = {
   address: string;
@@ -17,12 +18,8 @@ type MerkleInfo = {
   merkleProof: string[];
 };
 
-if (!process.env.MERKLE_TREE_PATH) {
-  throw new Error('No MERKLE_TREE_PATH in ENV')
-}
-
 export function getMerkleInfo(proxy: string): MerkleInfo {
-  const fileContent = readFileSync(process.env.MERKLE_TREE_PATH!, 'utf-8');
+  const fileContent = readFileSync(getMerkleTreePath(), 'utf-8');
   const merkleTree: MerkleTree = JSON.parse(fileContent);
 
   const entry = merkleTree.data.find(

@@ -1,13 +1,9 @@
 import { logger } from '../../common/helpers/logger'
 import { SSVNetworkAbi } from '../contracts/SSVNetworkContract'
-import { Address, encodeFunctionData } from 'viem'
+import { encodeFunctionData } from 'viem'
 import { ClusterState } from '../models/ClusterState'
-import { sendTx } from '../../common/helpers/sendTx'
 import { waitForHashToBeApprovedAndExecute } from '../../safe/waitForHashToBeApprovedAndExecute'
 import { MetaTransaction } from '../../safe/models/MetaTransaction'
-import { SSVTokenAbi } from '../contracts/SSVTokenContract'
-import { P2pSsvProxyFactoryAbi } from '../contracts/P2pSsvProxyFactoryContract'
-import { toClusterState } from '../models/ClusterStateApi'
 
 export async function bulkRemoveValidator(
   proxy: string,

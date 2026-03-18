@@ -2,6 +2,7 @@ import axios from 'axios'
 import { logger } from '../../common/helpers/logger'
 import { ClusterStateApi } from '../models/ClusterStateApi'
 import { isHolesky } from '../../common/helpers/clients'
+import { getBeaconUrl } from '../helpers/ssvEnv'
 
 export async function getClusterStateFromApi(
   owner: string,
@@ -10,9 +11,7 @@ export async function getClusterStateFromApi(
   const args = `owner/${owner}/operators/${operators.join(',')}`
   logger.info('getClusterStateFromApi started for ' + args)
 
-  if (!process.env.BEACON_URL) {
-    throw new Error('No BEACON_URL in ENV')
-  }
+  getBeaconUrl()
 
   const result = await axios.get(
     `https://api.ssv.network/api/v4/${isHolesky ? 'hoodi' : 'mainnet'}/clusters/` +

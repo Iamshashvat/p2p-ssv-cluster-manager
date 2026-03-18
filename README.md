@@ -27,6 +27,19 @@ pnpm start
 ##### Withdraw excess SSV tokens from clusters
 `pnpm run 03-withdraw-excess-tokens-from-clusters`
 
+## Mainnet SSV env config
+
+The SSV scripts now read operational values from env instead of hardcoded constants.
+Use `.env.mainnet` / `.env.hoodi` as the source of truth for required keys.
+
+Key groups:
+
+- Factory/proxy migration addresses: `OLD_FACTORY`, `P2P_SSV_PROXY_FACTORY_ADDRESS_3_1`, `P2P_SSV_PROXY_IMPL_ADDRESS`, `P2P_UPGRADEABLE_BEACON_ADDRESS`.
+- Factory constants: `P2P_ORG_UNLIMITED_ETH_DEPOSITOR`, `REFERENCE_FEE_DISTRIBUTOR`, `SSV_PER_ETH_EXCHANGE_RATE_DIVIDED_BY_WEI`, `MAX_SSV_TOKEN_AMOUNT_PER_VALIDATOR`, `FACTORY_OPERATOR`, `FACTORY_OWNER`.
+- Operator configuration: `ALLOWED_SSV_OPERATOR_OWNERS`, `SET_SSV_OPERATOR_OWNER`, `SET_SSV_OPERATOR_IDS`.
+- Fee recipient config: `SSV_CLIENT_BASIS_POINTS`, `SSV_CLIENT_RECIPIENT`, `SSV_REFERRER_BASIS_POINTS`, `SSV_REFERRER_RECIPIENT`, `SSV_FEE_RECIPIENT_ADDRESS`.
+- Action-specific inputs: `SSV_EXIT_*`, `SSV_REACTIVATE_*`, `SSV_LIQUIDATE_*`.
+
 ## Important
 
 All HTTP requests return instantly. But the actual processes take long time to complete.

@@ -565,11 +565,11 @@ if (!process.env.FEE_DISTRIBUTOR_FACTORY) {
   throw new Error('No FEE_DISTRIBUTOR_FACTORY in ENV')
 }
 
-export const FeeDistributorFactoryAddresss = process.env
+export const FeeDistributorFactoryAddress = process.env
   .FEE_DISTRIBUTOR_FACTORY as `0x${string}`
 
 export const FeeDistributorFactoryContract = getContract({
-  address: FeeDistributorFactoryAddresss,
+  address: FeeDistributorFactoryAddress,
   abi: FeeDistributorFactoryAbi,
   client: {
     public: publicClient,

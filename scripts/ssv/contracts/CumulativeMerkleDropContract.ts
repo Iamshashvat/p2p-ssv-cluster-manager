@@ -7,11 +7,11 @@ if (!process.env.CUMULATIVE_MERKLE_DROP) {
   throw new Error('No CUMULATIVE_MERKLE_DROP in ENV')
 }
 
-export const CumulativeMerkleDropAddresss = process.env
+export const CumulativeMerkleDropAddress = process.env
   .CUMULATIVE_MERKLE_DROP as `0x${string}`
 
 export const CumulativeMerkleDropContract = getContract({
-  address: CumulativeMerkleDropAddresss,
+  address: CumulativeMerkleDropAddress,
   abi: CumulativeMerkleDropAbi,
   client: {
     public: publicClient,

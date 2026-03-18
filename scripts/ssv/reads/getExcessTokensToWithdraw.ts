@@ -3,17 +3,15 @@ import { ClusterStateApi } from '../models/ClusterStateApi'
 import { getOperatorFee } from './getOperatorFee'
 import { getNetworkFee } from './getNetworkFee'
 import { getMinimumLiquidationCollateral } from './getMinimumLiquidationCollateral'
-import process from 'process'
 import { blocksPerDay } from '../../common/helpers/constants'
 import { getCurrentClusterBalance } from './getCurrentClusterBalance'
 import { getLiquidationThresholdPeriod } from './getLiquidationThresholdPeriod'
+import { getAllowedDaysToLiquidationForPrivate } from '../helpers/ssvEnv'
 
 export async function getExcessTokensToWithdraw(clusterState: ClusterStateApi) {
   logger.info('getExcessTokensToWithdraw started for ' + clusterState.clusterId)
 
-  if (!process.env.ALLOWED_DAYS_TO_LIQUIDATION_FOR_PRIVATE) {
-    throw new Error('No ALLOWED_DAYS_TO_LIQUIDATION_FOR_PRIVATE in ENV')
-  }
+  const allowedDaysToLiquidationForPrivate = getAllowedDaysToLiquidationForPrivate()
 
   const { validatorCount, operators } = clusterState
 
@@ -35,9 +33,6 @@ export async function getExcessTokensToWithdraw(clusterState: ClusterStateApi) {
   const networkFee = await getNetworkFee()
   totalFeePerBlock += networkFee
 
-  const allowedDaysToLiquidationForPrivate = BigInt(
-    process.env.ALLOWED_DAYS_TO_LIQUIDATION_FOR_PRIVATE,
-  )
   const neededBalancePerValidator =
     totalFeePerBlock * blocksPerDay * allowedDaysToLiquidationForPrivate
   const minimumLiquidationCollateral = await getMinimumLiquidationCollateral()

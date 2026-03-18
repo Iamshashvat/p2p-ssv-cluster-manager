@@ -1,11 +1,9 @@
 import { logger } from '../../common/helpers/logger'
 import { isHolesky, publicClient } from '../../common/helpers/clients'
-import { decodeEventLog } from 'viem'
 import {
   SSVNetworkAbi,
-  SSVNetworkAddresss,
+  SSVNetworkAddress,
 } from '../contracts/SSVNetworkContract'
-import { getPubkeysForProxy } from './getPubkeysForProxy'
 import { sleep } from '../../common/helpers/sleep'
 
 export async function getOperatorIdsForProxy(proxy: string): Promise<bigint[][]> {
@@ -15,7 +13,7 @@ export async function getOperatorIdsForProxy(proxy: string): Promise<bigint[][]>
 
   try {
     const logs = await publicClient.getContractEvents({
-      address: SSVNetworkAddresss,
+      address: SSVNetworkAddress,
       abi: SSVNetworkAbi,
       eventName: 'ValidatorAdded',
       fromBlock: isHolesky ? 1502570n : 1000000n,
@@ -26,16 +24,22 @@ export async function getOperatorIdsForProxy(proxy: string): Promise<bigint[][]>
       },
     })
 
-    const operatorIds = logs.map(
-      (log) =>
-        (
-          decodeEventLog({
-            abi: SSVNetworkAbi,
-            data: log.data,
-            topics: log.topics,
-          }).args as unknown as { operatorIds: bigint[] }
-        ).operatorIds,
-    )
+    const operatorIds: bigint[][] = []
+    let skippedLogs = 0
+    for (const log of logs) {
+      const ids = (log as { args?: { operatorIds?: bigint[] } }).args?.operatorIds
+      if (!ids) {
+        skippedLogs += 1
+        continue
+      }
+      operatorIds.push(ids)
+    }
+    if (skippedLogs > 0) {
+      logger.warn(
+        `getOperatorIdsForProxy skipped logs without decoded operatorIds args for ${proxy}`,
+        skippedLogs,
+      )
+    }
 
     logger.info('getOperatorIdsForProxy finished for ' + proxy)
 

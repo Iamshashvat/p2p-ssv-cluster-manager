@@ -1,16 +1,17 @@
 import { logger } from '../../common/helpers/logger'
 import { SSVNetworkAbi } from '../contracts/SSVNetworkContract'
 import { sendTx } from '../../common/helpers/sendTx'
+import { getAddress, getNumberList, getRequiredString } from '../helpers/ssvEnv'
 
 export async function exitValidator() {
   logger.log('exitValidator started')
 
-  const publicKey =
-    '0xaf1af4ff38f09d3f0e6bb15637cd69a435b4d56437b07c058ed0e47511cecc6354730739dbd2389ffb112d62927e1a60'
-  const operatorIds = [192, 195, 200, 201]
+  const publicKey = getRequiredString('SSV_EXIT_PUBLIC_KEY')
+  const operatorIds = getNumberList('SSV_EXIT_OPERATOR_IDS')
+  const proxyAddress = getAddress('SSV_EXIT_PROXY_ADDRESS')
 
   const txHash = await sendTx(
-    '0x5071e29F49F9B008267D2Ed76D54B32D91695cDe',
+    proxyAddress,
     SSVNetworkAbi,
     'exitValidator',
     [publicKey, operatorIds],

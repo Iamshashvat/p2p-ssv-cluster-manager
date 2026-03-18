@@ -2,19 +2,17 @@ import axios from 'axios'
 import { logger } from '../../common/helpers/logger'
 import { sleep } from '../../common/helpers/sleep'
 import https from 'https'
-import axiosRetry from 'axios-retry'
+import { getBeaconUrl } from '../helpers/ssvEnv'
 
 export async function getIsValidatorExited(pubkey: string): Promise<boolean> {
   logger.info('getIsValidatorExited started for ' + pubkey)
 
-  if (!process.env.BEACON_URL) {
-    throw new Error('No BEACON_URL in ENV')
-  }
+  const beaconUrl = getBeaconUrl()
 
   try {
     const agent = new https.Agent({ family: 4 }); // prefer IPv4
     const result = await axios.get(
-      process.env.BEACON_URL! + '/eth/v1/beacon/states/head/validators/' + pubkey,
+      beaconUrl + '/eth/v1/beacon/states/head/validators/' + pubkey,
       { httpsAgent: agent, timeout: 30_000, proxy: false }
     )
     if (result.data.code && result.data.code == 404) {

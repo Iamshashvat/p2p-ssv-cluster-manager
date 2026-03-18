@@ -1,6 +1,5 @@
 import { logger } from '../../common/helpers/logger'
 import { isHolesky, publicClient } from '../../common/helpers/clients'
-import { decodeEventLog } from 'viem'
 import { P2pSsvProxyFactoryAbi_3_1, P2pSsvProxyFactoryAddress_3_1 } from '../contracts/P2pSsvProxyFactoryContract_3_1'
 
 export async function getP2pSsvProxies_3_1() {
@@ -15,16 +14,22 @@ export async function getP2pSsvProxies_3_1() {
     strict: false,
   })
 
-  const proxies = logs.map(
-    (log) =>
-      (
-        decodeEventLog({
-          abi: P2pSsvProxyFactoryAbi_3_1,
-          data: log.data,
-          topics: log.topics,
-        }).args as unknown as { _proxy: string }
-      )._proxy,
-  )
+  const proxies: string[] = []
+  let skippedLogs = 0
+  for (const log of logs) {
+    const proxy = (log as { args?: { _proxy?: string } }).args?._proxy
+    if (!proxy) {
+      skippedLogs += 1
+      continue
+    }
+    proxies.push(proxy)
+  }
+  if (skippedLogs > 0) {
+    logger.warn(
+      'getP2pSsvProxies_3_1 skipped logs without decoded _proxy args',
+      skippedLogs,
+    )
+  }
 
   logger.info('getP2pSsvProxies_3_1 finished')
 

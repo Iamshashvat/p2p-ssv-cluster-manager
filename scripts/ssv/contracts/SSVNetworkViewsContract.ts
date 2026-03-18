@@ -424,11 +424,11 @@ if (!process.env.SSV_NETWORK_VIEWS_ADDRESS) {
   throw new Error('No SSV_NETWORK_VIEWS_ADDRESS in ENV')
 }
 
-export const SSVNetworkViewsAddresss = process.env
+export const SSVNetworkViewsAddress = process.env
   .SSV_NETWORK_VIEWS_ADDRESS as `0x${string}`
 
 export const SSVNetworkViewsContract = getContract({
-  address: SSVNetworkViewsAddresss,
+  address: SSVNetworkViewsAddress,
   abi: SSVNetworkViewsAbi,
   client: {
     public: publicClient,

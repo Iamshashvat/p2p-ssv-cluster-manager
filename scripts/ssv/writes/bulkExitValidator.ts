@@ -1,7 +1,6 @@
 import { logger } from '../../common/helpers/logger'
 import { SSVNetworkAbi } from '../contracts/SSVNetworkContract'
 import { Address } from 'viem'
-import { ClusterState } from '../models/ClusterState'
 import { sendTx } from '../../common/helpers/sendTx'
 
 export async function bulkExitValidator(
@@ -10,7 +9,7 @@ export async function bulkExitValidator(
   operatorIds: (number | bigint)[]
 ) {
   logger.log(
-    'bulkRemoveValidator started for ' + proxy,
+    'bulkExitValidator started for ' + proxy,
     operatorIds.join(',') + ' ' + publicKeys.join('\n'),
   )
 
@@ -22,7 +21,7 @@ export async function bulkExitValidator(
   )
 
   logger.log(
-    'bulkRemoveValidator finished for ' + proxy,
+    'bulkExitValidator finished for ' + proxy,
     operatorIds.join(',') + ' ' + publicKeys.join('\n'),
   )
 

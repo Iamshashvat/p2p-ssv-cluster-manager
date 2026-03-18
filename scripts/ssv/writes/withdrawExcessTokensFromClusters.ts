@@ -5,25 +5,11 @@ import { waitForHashToBeApprovedAndExecute } from '../../safe/waitForHashToBeApp
 import { ClusterStateApi, toClusterState } from '../models/ClusterStateApi'
 import { getClusterStatesToWithdraw } from '../reads/getClusterStatesToWithdraw'
 import { P2pSsvProxyContractAbi } from '../contracts/P2pSsvProxyContractAbi'
+import { getSharedSsvWriteConfig } from '../helpers/ssvEnv'
 
 export async function withdrawExcessTokensFromClusters() {
   logger.info('withdrawExcessTokensFromClusters started')
-
-  if (!process.env.P2P_SSV_PROXY_FACTORY_ADDRESS) {
-    throw new Error('No P2P_SSV_PROXY_FACTORY_ADDRESS in ENV')
-  }
-  if (!process.env.SAFE_ADDRESS) {
-    throw new Error('No SAFE_ADDRESS in ENV')
-  }
-  if (!process.env.SAFE_OWNER_ADDRESS_2) {
-    throw new Error('No SAFE_OWNER_ADDRESS_2 in ENV')
-  }
-  if (!process.env.SSV_NETWORK_ADDRESS) {
-    throw new Error('No SSV_NETWORK_ADDRESS in ENV')
-  }
-  if (!process.env.SSV_TOKEN_ADDRESS) {
-    throw new Error('No SSV_TOKEN_ADDRESS in ENV')
-  }
+  const config = getSharedSsvWriteConfig()
 
   const clusterStatesToWithdraw = await getClusterStatesToWithdraw()
 
@@ -32,7 +18,7 @@ export async function withdrawExcessTokensFromClusters() {
     logger.info('withdrawExcessTokensFromClusters finished')
     return
   }
-  const metaTxs = getMetaTxs(clusterStatesToWithdraw)
+  const metaTxs = getMetaTxs(clusterStatesToWithdraw, config.factoryAddress)
 
   await waitForHashToBeApprovedAndExecute(metaTxs)
 
@@ -41,7 +27,10 @@ export async function withdrawExcessTokensFromClusters() {
 
 type ClusterStateToWithdraw = ClusterStateApi & { tokensToWithdraw: bigint }
 
-function getMetaTxs(clusterStatesToWithdraw: ClusterStateToWithdraw[]) {
+function getMetaTxs(
+  clusterStatesToWithdraw: ClusterStateToWithdraw[],
+  factoryAddress: `0x${string}`,
+) {
   const metaTxs: MetaTransaction[] = []
 
   for (const clusterStateApi of clusterStatesToWithdraw) {
@@ -66,7 +55,7 @@ function getMetaTxs(clusterStatesToWithdraw: ClusterStateToWithdraw[]) {
       abi: P2pSsvProxyContractAbi,
       functionName: 'withdrawSSVTokens',
       args: [
-        process.env.P2P_SSV_PROXY_FACTORY_ADDRESS,
+        factoryAddress,
         clusterStateApi.tokensToWithdraw,
       ],
     })

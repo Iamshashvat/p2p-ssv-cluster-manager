@@ -1,16 +1,15 @@
 import { logger } from '../../common/helpers/logger'
 import { isHolesky, publicClient } from '../../common/helpers/clients'
-import { decodeEventLog } from 'viem'
 import {
   SSVNetworkAbi,
-  SSVNetworkAddresss,
+  SSVNetworkAddress,
 } from '../contracts/SSVNetworkContract'
 
 export async function getPubkeysForProxy(proxy: string) {
   logger.info('getPubkeysForProxy started for ' + proxy)
 
   const logs = await publicClient.getContractEvents({
-    address: SSVNetworkAddresss,
+    address: SSVNetworkAddress,
     abi: SSVNetworkAbi,
     eventName: 'ValidatorAdded',
     fromBlock: isHolesky ? 1502570n : 1000000n,
@@ -21,16 +20,22 @@ export async function getPubkeysForProxy(proxy: string) {
     },
   })
 
-  const pubkeys = logs.map(
-    (log) =>
-      (
-        decodeEventLog({
-          abi: SSVNetworkAbi,
-          data: log.data,
-          topics: log.topics,
-        }).args as unknown as { publicKey: string }
-      ).publicKey,
-  )
+  const pubkeys: string[] = []
+  let skippedLogs = 0
+  for (const log of logs) {
+    const pubkey = (log as { args?: { publicKey?: string } }).args?.publicKey
+    if (!pubkey) {
+      skippedLogs += 1
+      continue
+    }
+    pubkeys.push(pubkey)
+  }
+  if (skippedLogs > 0) {
+    logger.warn(
+      `getPubkeysForProxy skipped logs without decoded publicKey args for ${proxy}`,
+      skippedLogs,
+    )
+  }
 
   logger.info('getPubkeysForProxy finished for ' + proxy)
 
